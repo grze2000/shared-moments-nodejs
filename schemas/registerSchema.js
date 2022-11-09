@@ -1,0 +1,54 @@
+export const registerSchema = {
+  fullname: {
+    in: ['body'],
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Podaj imię i nazwisko',
+    },
+    isAlpha: {
+      errorMessage: 'Imię i nazwisko może zawierać tylko litery',
+      options: [
+        'pl-PL',
+        {
+          ignore: ' ',
+        }
+      ]
+    }
+  },
+  email: {
+    in: ['body'],
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Podaj email',
+    },
+    isEmail: {
+      errorMessage: 'Podaj poprawny email',
+    }
+  },
+  password: {
+    in: ['body'],
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Podaj hasło',
+    },
+    isLength: {
+      options: {min: 8, max: 32},
+      errorMessage: 'Hasło musi zawierać od 8 do 32 znaków',
+    },
+  },
+  confirmPassword: {
+    in: ['body'],
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Potwierdź hasło',
+    },
+    custom: {
+      options: (value, {req}) => {
+        if (value !== req.body.password) {
+          throw new Error('Podane hasła nie są identyczne');
+        }
+        return true;
+      }
+    }
+  }
+}

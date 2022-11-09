@@ -1,0 +1,4 @@
+export const BOARD_FIELD_SHAPES = {
+  CIRCLE: 'CIRCLE',
+  SQUARE: 'SQUARE',
+}
