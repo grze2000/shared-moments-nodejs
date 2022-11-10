@@ -23,5 +23,5 @@ jobs:
           source ~/.nvm/nvm.sh
           cd /var/www/shared-moments-nodejs
           git pull origin master
-          npm i
+          pnpm i
           pm2 restart "Shared moments"
