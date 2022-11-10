@@ -1,7 +1,7 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import { User } from "../models/User";
+import { User } from "../models/User.js";
 
-const config = passport => {
+export const configurePassport = passport => {
   const options = {};
   options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
   options.secretOrKey = process.env.SECRET;
@@ -16,5 +16,3 @@ const config = passport => {
     });
   }))
 }
-
-module.exports = config;

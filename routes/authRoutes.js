@@ -18,6 +18,7 @@ const authRouter = Router();
  *  post:
  *    tags: [Auth]
  *    summary: Log in a user
+ *    security: []
  *    requestBody:
  *      required: true
  *      content:
@@ -55,6 +56,7 @@ authRouter.post("/login", checkSchema(loginSchema), login);
  *  post:
  *    tags: [Auth]
  *    summary: Register a new user
+ *    security: []
  *    requestBody:
  *      required: true
  *      content:
@@ -83,6 +85,7 @@ authRouter.post("/register", checkSchema(registerSchema), register);
  * /auth/refresh-token:
  *  post:
  *    tags: [Auth]
+ *    security: []
  *    consumes:
  *      - application/json
  *    parameters:
@@ -111,6 +114,7 @@ authRouter.post("/refresh-token", checkSchema(tokenSchema), refreshToken);
  * /auth/revoke-token:
  *  post:
  *    tags: [Auth]
+ *    security: []
  *    consumes:
  *      - application/json
  *    parameters:

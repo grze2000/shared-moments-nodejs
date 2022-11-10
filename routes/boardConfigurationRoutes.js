@@ -1,5 +1,13 @@
 import { Router } from "express";
+import { param } from "express-validator";
 import { checkSchema } from "express-validator";
+import passport from "passport";
+import {
+  addBoardConfiguration,
+  getBoardConfiguration,
+} from "../controllers/boardConfigurationController.js";
+import { handleValidationErrors } from "../middlewares/handleValidationErrors.js";
+import { boardConfigurationSchema } from "../schemas/boardConfigurationSchema.js";
 
 const boardConfigurationRouter = Router();
 
@@ -42,6 +50,54 @@ const boardConfigurationRouter = Router();
  *                      icon:
  *                        type: string
  */
-boardConfigurationRouter.get("/", () => {});
+boardConfigurationRouter.get(
+  "/:boardConfigurationId",
+  passport.authenticate("jwt", { session: false }),
+  param("boardConfigurationId").isMongoId(),
+  handleValidationErrors,
+  getBoardConfiguration
+);
+
+/**
+ * @swagger
+ * /board-configurations:
+ *  post:
+ *    tags: [Board Configurations]
+ *    summary: Add a new board configuration
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              shape:
+ *                type: string
+ *              rows:
+ *                type: number
+ *              columns:
+ *                type: number
+ *              title:
+ *                type: string
+ *              activities:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  properties:
+ *                    name:
+ *                      type: string
+ *                    icon:
+ *                      type: string
+ *    responses:
+ *      201:
+ *        description: Created
+ */
+boardConfigurationRouter.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  checkSchema(boardConfigurationSchema),
+  handleValidationErrors,
+  addBoardConfiguration
+);
 
 export { boardConfigurationRouter };

@@ -1,5 +1,5 @@
-import { Schema } from "mongoose";
-import { BOARD_FIELD_SHAPES } from "../enums/boardFieldShapes";
+import mongoose, { Schema } from "mongoose";
+import { BOARD_FIELD_SHAPES } from "../enums/boardFieldShapes.js";
 
 const boardConfigurationSchema = new Schema({
   shape: {
