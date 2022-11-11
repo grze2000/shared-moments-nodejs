@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const boardSchema = new Schema({
   users: [{
@@ -6,13 +6,22 @@ const boardSchema = new Schema({
     ref: 'User',
   }],
   name: String,
-  activitiesProgress: [
+  activities: [
     {
       name: String,
       icon: String,
-      isCompleted: Boolean,
-      completionDate: Date,
-      photo: String,
+      isCompleted: {
+        type: Boolean,
+        default: false,
+      },
+      completionDate: {
+        type: Date,
+        default: null,
+      },
+      photo: {
+        type: String,
+        default: null,
+      },
     }
   ]
 });
