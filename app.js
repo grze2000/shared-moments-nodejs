@@ -38,11 +38,13 @@ app.use(
   })
 );
 
-app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+const v1Router = express.Router();
+v1Router.use('/auth', authRouter);
+v1Router.use('/boards', boardRouter);
+v1Router.use('/board-configurations', boardConfigurationRouter);
+v1Router.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
-app.use('/auth', authRouter);
-app.use('/boards', boardRouter);
-app.use('/board-configurations', boardConfigurationRouter);
+app.use('/v1', v1Router);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

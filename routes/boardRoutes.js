@@ -1,11 +1,21 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { param } from "express-validator";
-import { checkSchema } from "express-validator";
 import passport from "passport";
-import { createBoard, deleteBoard, getBoard, getBoards, markActivityAsCompleted } from "../controllers/boardController.js";
+import {
+  createBoard,
+  deleteBoard,
+  getActivityPhoto,
+  getBoard,
+  getBoards,
+  handleUploadedActivityPhoto,
+  markActivityAsCompleted,
+  validateActivity,
+} from "../controllers/boardController.js";
 import { handleValidationErrors } from "../middlewares/handleValidationErrors.js";
+import multer from "multer";
 
+const upload = multer({ dest: process.env.UPLOAD_DESTINATION || "uploads/" });
 const boardRouter = Router();
 
 /**
@@ -217,6 +227,41 @@ boardRouter.post(
 /**
  * @swagger
  * /boards/{boardId}/activity/{activityId}/photo:
+ *  get:
+ *    tags: [Boards]
+ *    summary: Get photo for activity
+ *    parameters:
+ *      - name: boardId
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: activityId
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        description: OK
+ *        content:
+ *          image/png:
+ *            schema:
+ *              type: string
+ *              format: binary
+ */
+boardRouter.get(
+  "/:boardId/activity/:activityId/photo",
+  passport.authenticate("jwt", { session: false }),
+  param("boardId").isMongoId(),
+  param("activityId").isString(),
+  handleValidationErrors,
+  getActivityPhoto
+);
+
+/**
+ * @swagger
+ * /boards/{boardId}/activity/{activityId}/photo:
  *  post:
  *    tags: [Boards]
  *    summary: Add photo to activity
@@ -242,7 +287,16 @@ boardRouter.post(
  *      200:
  *       description: OK
  */
-boardRouter.post("/:boardId/activity/:activityId/photo", () => {});
+boardRouter.post(
+  "/:boardId/activity/:activityId/photo",
+  passport.authenticate("jwt", { session: false }),
+  param("boardId").isMongoId(),
+  param("activityId").isString(),
+  handleValidationErrors,
+  validateActivity,
+  upload.single("file"),
+  handleUploadedActivityPhoto
+);
 
 /**
  * @swagger
