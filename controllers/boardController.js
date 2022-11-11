@@ -38,7 +38,10 @@ export const createBoard = (req, res) => {
 
 export const getBoard = (req, res) => {
   const { boardId } = req.params;
-  Board.findOne({ users: req.user._id, _id: boardId }, { __v: false, 'activities.photo': false })
+  Board.findOne(
+    { users: req.user._id, _id: boardId },
+    { __v: false, "activities.photo": false }
+  )
     .populate("users", { __v: false, password: false })
     .exec()
     .then((board) => {
@@ -63,7 +66,7 @@ export const getBoard = (req, res) => {
 };
 
 export const getBoards = (req, res) => {
-  Board.find({ users: req.user._id }, { __v: false, 'activities.photo': false })
+  Board.find({ users: req.user._id }, { __v: false, "activities.photo": false })
     .populate("users", { __v: false, password: false })
     .exec()
     .then((boards) => {
@@ -162,10 +165,13 @@ export const handleUploadedActivityPhoto = (req, res) => {
     return res.status(500).json({ message: "Board not found" });
   }
   if (req.file) {
-    req.board.activities.find((activity) =>
+    const activity = req.board.activities.find((activity) =>
       activity._id.equals(activityId)
-    ).photo = req.file.filename;
-    console.log(req.file);
+    );
+    if(activity.photo && fs.existsSync(`./uploads/${activity.photo}`)) {
+      fs.unlinkSync(`./uploads/${activity.photo}`);
+    }
+    activity.photo = req.file.filename;
     req.board.save((err) => {
       if (err) {
         return res.status(500).json({ message: "Database error" });
