@@ -3,7 +3,7 @@ import { body } from "express-validator";
 import { param } from "express-validator";
 import { checkSchema } from "express-validator";
 import passport from "passport";
-import { createBoard, deleteBoard, getBoard, getBoards } from "../controllers/boardController.js";
+import { createBoard, deleteBoard, getBoard, getBoards, markActivityAsCompleted } from "../controllers/boardController.js";
 import { handleValidationErrors } from "../middlewares/handleValidationErrors.js";
 
 const boardRouter = Router();
@@ -205,7 +205,14 @@ boardRouter.post(
  *      200:
  *       description: OK
  */
-boardRouter.post("/:boardId", () => {});
+boardRouter.post(
+  "/:boardId/activity/:activityId/complete",
+  passport.authenticate("jwt", { session: false }),
+  param("boardId").isMongoId(),
+  param("activityId").isString(),
+  handleValidationErrors,
+  markActivityAsCompleted
+);
 
 /**
  * @swagger
@@ -235,7 +242,7 @@ boardRouter.post("/:boardId", () => {});
  *      200:
  *       description: OK
  */
-boardRouter.post("/:boardId", () => {});
+boardRouter.post("/:boardId/activity/:activityId/photo", () => {});
 
 /**
  * @swagger

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Board } from "../models/Board.js";
 import { BoardConfiguration } from "../models/BoardConfiguration.js";
 
@@ -92,6 +93,7 @@ export const deleteBoard = (req, res) => {
 
 export const markActivityAsCompleted = (req, res) => {
   const { boardId, activityId } = req.params;
+  const { name } = req.body;
   Board.findOne({ _id: boardId, users: req.user._id })
     .then((board) => {
       if (!board) {
@@ -99,7 +101,28 @@ export const markActivityAsCompleted = (req, res) => {
           .status(400)
           .json({ message: "Nieprawidłowy identyfikator planszy" });
       }
-      res.sendStatus(200); // TODO
+      const activity = board.activities.find(
+        (activity) =>
+          activity._id.equals(activityId) ||
+          (activity.icon === activityId && !activity.isCompleted)
+      );
+      console.log(activity);
+      if (activity) {
+        activity.isCompleted = !activity.isCompleted;
+        if (activity.icon === "OWN_ACTIVITY" && name) {
+          activity.name = name;
+        }
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Nieprawidłowy identyfikator aktywności" });
+      }
+      board.save((err) => {
+        if (err) {
+          return res.status(500).json({ message: "Database error" });
+        }
+        return res.sendStatus(200);
+      });
     })
     .catch((err) => {
       return res.status(500).json({ message: "Database error" });

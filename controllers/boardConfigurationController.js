@@ -24,10 +24,10 @@ export const addBoardConfiguration = (req, res) => {
     columns,
     title,
     activities,
-  }).save((err) => {
+  }).save((err, boardConfiguration) => {
     if (err) {
       return res.status(500).json({ message: "Database error" });
     }
-    return res.status(201).json({ message: "Dodano nową konfigurację planszy" });
+    return res.status(201).json(boardConfiguration._id);
   });
 };
