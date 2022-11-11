@@ -86,15 +86,15 @@ authRouter.post("/register", checkSchema(registerSchema), register);
  *  post:
  *    tags: [Auth]
  *    security: []
- *    consumes:
- *      - application/json
- *    parameters:
- *      - in: body
- *        schema:
- *          type: object
- *          properties:
- *            token:
- *              type: string
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              token:
+ *                type: string
  *    responses:
  *      200:
  *        content:
@@ -115,16 +115,15 @@ authRouter.post("/refresh-token", checkSchema(tokenSchema), refreshToken);
  *  post:
  *    tags: [Auth]
  *    security: []
- *    consumes:
- *      - application/json
- *    parameters:
- *      - in: body
- *        name: body
- *        schema:
- *          type: object
- *          properties:
- *            token:
- *              type: string
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              token:
+ *                type: string
  *    responses:
  *      200:
  *        description: OK
