@@ -14,7 +14,7 @@ const authRouter = Router();
 
 /**
  * @swagger
- * /auth/login:
+ * /v1/auth/login:
  *  post:
  *    tags: [Auth]
  *    summary: Log in a user
@@ -52,7 +52,7 @@ authRouter.post("/login", checkSchema(loginSchema), login);
 
 /**
  * @swagger
- * /auth/register:
+ * /v1/auth/register:
  *  post:
  *    tags: [Auth]
  *    summary: Register a new user
@@ -82,7 +82,7 @@ authRouter.post("/register", checkSchema(registerSchema), register);
 
 /**
  * @swagger
- * /auth/refresh-token:
+ * /v1/auth/refresh-token:
  *  post:
  *    tags: [Auth]
  *    security: []
@@ -111,7 +111,7 @@ authRouter.post("/refresh-token", checkSchema(tokenSchema), refreshToken);
 
 /**
  * @swagger
- * /auth/revoke-token:
+ * /v1/auth/revoke-token:
  *  post:
  *    tags: [Auth]
  *    security: []

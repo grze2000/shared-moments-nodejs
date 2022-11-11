@@ -13,7 +13,7 @@ const boardConfigurationRouter = Router();
 
 /**
  * @swagger
- * /board-configurations/{boardConfigurationId}:
+ * /v1/board-configurations/{boardConfigurationId}:
  *  get:
  *    tags: [Board Configurations]
  *    summary: Gets a board configuration by ID
@@ -60,7 +60,7 @@ boardConfigurationRouter.get(
 
 /**
  * @swagger
- * /board-configurations:
+ * /v1/board-configurations:
  *  post:
  *    tags: [Board Configurations]
  *    summary: Add a new board configuration

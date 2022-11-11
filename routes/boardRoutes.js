@@ -20,7 +20,7 @@ const boardRouter = Router();
 
 /**
  * @swagger
- * /boards:
+ * /v1/boards:
  *  get:
  *    tags: [Boards]
  *    summary: Gets a list of all user activity boards
@@ -78,7 +78,7 @@ boardRouter.get(
 
 /**
  * @swagger
- * /boards/{boardId}:
+ * /v1/boards/{boardId}:
  *  get:
  *    tags: [Boards]
  *    summary: Gets a board by ID
@@ -157,7 +157,7 @@ boardRouter.get(
 
 /**
  * @swagger
- * /boards:
+ * /v1/boards:
  *  post:
  *    tags: [Boards]
  *    summary: Creates a new board based on passed board configuration
@@ -187,7 +187,7 @@ boardRouter.post(
 
 /**
  * @swagger
- * /boards/{boardId}/activity/{activityId}/complete:
+ * /v1/boards/{boardId}/activity/{activityId}/complete:
  *  post:
  *    tags: [Boards]
  *    summary: Change activity status to completed
@@ -226,7 +226,7 @@ boardRouter.post(
 
 /**
  * @swagger
- * /boards/{boardId}/activity/{activityId}/photo:
+ * /v1/boards/{boardId}/activity/{activityId}/photo:
  *  get:
  *    tags: [Boards]
  *    summary: Get photo for activity
@@ -261,7 +261,7 @@ boardRouter.get(
 
 /**
  * @swagger
- * /boards/{boardId}/activity/{activityId}/photo:
+ * /v1/boards/{boardId}/activity/{activityId}/photo:
  *  post:
  *    tags: [Boards]
  *    summary: Add photo to activity
@@ -300,7 +300,7 @@ boardRouter.post(
 
 /**
  * @swagger
- * /boards/{boardId}:
+ * /v1/boards/{boardId}:
  *  delete:
  *    tags: [Boards]
  *    summary: Delete board by ID
