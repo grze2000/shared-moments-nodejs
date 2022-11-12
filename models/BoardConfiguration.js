@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { BOARD_FIELD_SHAPES } from "../enums/boardFieldShapes.js";
+import { BOARD_FORMATS } from "../enums/boardFormats.js";
 
 const boardConfigurationSchema = new Schema({
   shape: {
@@ -14,6 +15,21 @@ const boardConfigurationSchema = new Schema({
   columns: {
     type: Number,
     required: true,
+  },
+  tileSize: {
+    width: {
+      type: Number,
+      required: true,
+    },
+    height: {
+      type: Number,
+      required: true,
+    },
+  },
+  format: {
+    type: String,
+    required: true,
+    enum: Object.values(BOARD_FORMATS),
   },
   title: {
     type: String,
