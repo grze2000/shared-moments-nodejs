@@ -14,6 +14,10 @@ import {
 } from "../controllers/boardController.js";
 import { handleValidationErrors } from "../middlewares/handleValidationErrors.js";
 import multer from "multer";
+import {
+  getSharingCodeForBoard,
+  useSharingCodeForBoard,
+} from "../controllers/sharingCodeController.js";
 
 const upload = multer({ dest: process.env.UPLOAD_DESTINATION || "uploads/" });
 const boardRouter = Router();
@@ -183,6 +187,38 @@ boardRouter.post(
   body("boardConfigurationId").isMongoId(),
   handleValidationErrors,
   createBoard
+);
+
+/**
+ * @swagger
+ * /v1/boards/{boardId}/get-sharing-code:
+ *  get:
+ *    tags: [Boards]
+ *    summary: Gets a sharing code for a board
+ *    parameters:
+ *      - name: boardId
+ *        in: path
+ *        required: true
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                code:
+ *                  type: string
+ *                expiresAt:
+ *                  type: string
+ *                  format: date-time
+ */
+boardRouter.get(
+  "/:boardId/get-sharing-code",
+  passport.authenticate("jwt", { session: false }),
+  param("boardId").isMongoId(),
+  getSharingCodeForBoard
 );
 
 /**

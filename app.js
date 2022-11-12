@@ -13,6 +13,7 @@ import { swaggerDocs } from "./config/swagger.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { boardRouter } from "./routes/boardRoutes.js";
 import { boardConfigurationRouter } from "./routes/boardConfigurationRoutes.js";
+import { sharingCodeRouter } from "./routes/sharingCodeRoutes.js";
 
 const mongooseOptions = {
   useUnifiedTopology: true,
@@ -42,6 +43,7 @@ const v1Router = express.Router();
 v1Router.use('/auth', authRouter);
 v1Router.use('/boards', boardRouter);
 v1Router.use('/board-configurations', boardConfigurationRouter);
+v1Router.use('/sharing-codes', sharingCodeRouter)
 v1Router.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 app.use('/v1', v1Router);
