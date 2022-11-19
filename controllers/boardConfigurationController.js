@@ -1,3 +1,4 @@
+import { matchedData } from "express-validator";
 import { BoardConfiguration } from "../models/BoardConfiguration.js";
 
 export const getBoardConfiguration = (req, res) => {
@@ -15,17 +16,11 @@ export const getBoardConfiguration = (req, res) => {
 };
 
 export const addBoardConfiguration = (req, res) => {
-  // Get the board configuration from the request body
-  const { shape, rows, columns, title, activities } = req.body;
-  console.log(shape, rows, columns, title, activities);
-  BoardConfiguration({
-    shape,
-    rows,
-    columns,
-    title,
-    activities,
-  }).save((err, boardConfiguration) => {
+  BoardConfiguration(
+    matchedData(req, { locations: ["body"], includeOptionals: true })
+  ).save((err, boardConfiguration) => {
     if (err) {
+      console.log(err);
       return res.status(500).json({ message: "Database error" });
     }
     return res.status(201).json(boardConfiguration._id);

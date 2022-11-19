@@ -38,6 +38,15 @@ const boardConfigurationRouter = Router();
  *                  type: number
  *                columns:
  *                  type: number
+ *                tileSize:
+ *                  type: object
+ *                  properties:
+ *                    width:
+ *                      type: number
+ *                    height:
+ *                      type: number
+ *                format:
+ *                  type: string
  *                title:
  *                  type: string
  *                activities:
@@ -77,6 +86,15 @@ boardConfigurationRouter.get(
  *                type: number
  *              columns:
  *                type: number
+ *              tileSize:
+ *                type: object
+ *                properties:
+ *                  width:
+ *                    type: number
+ *                  height:
+ *                    type: number
+ *              format:
+ *                type: string
  *              title:
  *                type: string
  *              activities:

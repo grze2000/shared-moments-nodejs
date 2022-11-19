@@ -1,4 +1,5 @@
 import { BOARD_FIELD_SHAPES } from "../enums/boardFieldShapes.js";
+import { BOARD_FORMATS } from "../enums/boardFormats.js";
 
 export const boardConfigurationSchema = {
   shape: {
@@ -31,6 +32,36 @@ export const boardConfigurationSchema = {
     isNumeric: {
       errorMessage: 'Nieprawidłowa liczba kolumn',
     }
+  },
+  'tileSize.width': {
+    in: ['body'],
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Nie podano wymiarów kafelków',
+    },
+    isNumeric: {
+      errorMessage: 'Nieprawidłowa szerokość kafelka',
+    }
+  },
+  'tileSize.height': {
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Nie podano wymiarów kafelków',
+    },
+    isNumeric: {
+      errorMessage: 'Nieprawidłowa wysokość kafelka',
+    }
+  },
+  format: {
+    in: ['body'],
+    isEmpty: {
+      negated: true,
+      errorMessage: 'Podaj format planszy',
+    },
+    isIn: {
+      options: [Object.values(BOARD_FORMATS)],
+      errorMessage: 'Nieprawidłowy format planszy',
+    },
   },
   title: {
     in: ['body'],
