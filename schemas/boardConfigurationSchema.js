@@ -63,8 +63,8 @@ export const boardConfigurationSchema = {
       errorMessage: 'Brakująca nazwa aktywności',
     },
     isLength: {
-      options: {min: 0, max: 32},
-      errorMessage: 'Nazwa aktywności nie może być dłuższe niż 32 znaki',
+      options: {min: 0, max: 50},
+      errorMessage: 'Nazwa aktywności nie może być dłuższa niż 50 znaków',
     },
   },
   'activities.*.icon': {
