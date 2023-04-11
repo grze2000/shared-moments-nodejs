@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { param } from "express-validator";
 import passport from "passport";
-import { useSharingCodeForBoard } from "../controllers/sharingCodeController.js";
-import { handleValidationErrors } from "../middlewares/handleValidationErrors.js";
+import { handleValidationErrors } from "../middlewares/handleValidationErrors.middleware.js";
+import sharingCodeService from "../services/sharingCode.service.js";
 
-const sharingCodeRouter = Router();
+const sharingCodeController = Router();
 
 /**
  * @swagger
@@ -22,12 +22,12 @@ const sharingCodeRouter = Router();
  *      200:
  *        description: OK
  */
-sharingCodeRouter.post(
+sharingCodeController.post(
   "/:code",
   passport.authenticate("jwt", { session: false }),
   param("code").isMongoId(),
   handleValidationErrors,
-  useSharingCodeForBoard
+  sharingCodeService.useSharingCodeForBoard
 );
 
-export { sharingCodeRouter };
+export { sharingCodeController };

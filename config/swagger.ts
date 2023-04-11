@@ -5,7 +5,7 @@ export const swaggerOptions = {
     openapi: '3.0.1',
     info: {
       title: 'Wspólne chwile API',
-      version: '1.0.0',
+      version: '1.1.0',
     },
     basePath: '/',
     components: {
@@ -21,7 +21,7 @@ export const swaggerOptions = {
       bearerAuth: []
     }]
   },
-  apis: ['app.js', 'routes/*.js']
+  apis: ['controllers/*.js', 'controllers/*.ts']
 };
 
 export const swaggerDocs = swaggerJSDoc(swaggerOptions);

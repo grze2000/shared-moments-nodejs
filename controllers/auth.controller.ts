@@ -1,16 +1,11 @@
 import { Router } from "express";
 import { checkSchema } from "express-validator";
-import {
-  login,
-  refreshToken,
-  register,
-  revokeToken,
-} from "../controllers/authController.js";
-import { loginSchema } from "../schemas/loginSchema.js";
-import { registerSchema } from "../schemas/registerSchema.js";
-import { tokenSchema } from "../schemas/tokenSchema.js";
+import authService from "../services/auth.service.js";
+import { loginDto } from "../dto/login.dto.js";
+import { registerDto } from "../dto/register.dto.js";
+import { tokenDto } from "../dto/token.dto.js";
 
-const authRouter = Router();
+const authController = Router();
 
 /**
  * @swagger
@@ -48,7 +43,7 @@ const authRouter = Router();
  *                  type: string
  *
  */
-authRouter.post("/login", checkSchema(loginSchema), login);
+authController.post("/login", checkSchema(loginDto), authService.login);
 
 /**
  * @swagger
@@ -78,7 +73,7 @@ authRouter.post("/login", checkSchema(loginSchema), login);
  *      201:
  *        description: Account has been created
  */
-authRouter.post("/register", checkSchema(registerSchema), register);
+authController.post("/register", checkSchema(registerDto), authService.register);
 
 /**
  * @swagger
@@ -107,7 +102,7 @@ authRouter.post("/register", checkSchema(registerSchema), register);
  *                refreshToken:
  *                  type: string
  */
-authRouter.post("/refresh-token", checkSchema(tokenSchema), refreshToken);
+authController.post("/refresh-token", checkSchema(tokenDto), authService.refreshToken);
 
 /**
  * @swagger
@@ -130,6 +125,6 @@ authRouter.post("/refresh-token", checkSchema(tokenSchema), refreshToken);
  *      400:
  *        description: Invalid token
  */
-authRouter.post("/revoke-token", checkSchema(tokenSchema), revokeToken);
+authController.post("/revoke-token", checkSchema(tokenDto), authService.revokeToken);
 
-export { authRouter };
+export { authController };

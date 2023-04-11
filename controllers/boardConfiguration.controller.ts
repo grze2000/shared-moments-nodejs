@@ -2,14 +2,11 @@ import { Router } from "express";
 import { param } from "express-validator";
 import { checkSchema } from "express-validator";
 import passport from "passport";
-import {
-  addBoardConfiguration,
-  getBoardConfiguration,
-} from "../controllers/boardConfigurationController.js";
-import { handleValidationErrors } from "../middlewares/handleValidationErrors.js";
-import { boardConfigurationSchema } from "../schemas/boardConfigurationSchema.js";
+import { handleValidationErrors } from "../middlewares/handleValidationErrors.middleware.js";
+import boardConfigurationService from "../services/boardConfiguration.service.js";
+import { boardConfigurationDto } from "../dto/boardConfiguration.dto.js";
 
-const boardConfigurationRouter = Router();
+const boardConfigurationController = Router();
 
 /**
  * @swagger
@@ -59,12 +56,12 @@ const boardConfigurationRouter = Router();
  *                      icon:
  *                        type: string
  */
-boardConfigurationRouter.get(
+boardConfigurationController.get(
   "/:boardConfigurationId",
   passport.authenticate("jwt", { session: false }),
   param("boardConfigurationId").isMongoId(),
   handleValidationErrors,
-  getBoardConfiguration
+  boardConfigurationService.getBoardConfiguration
 );
 
 /**
@@ -110,12 +107,12 @@ boardConfigurationRouter.get(
  *      201:
  *        description: Created
  */
-boardConfigurationRouter.post(
+boardConfigurationController.post(
   "/",
   passport.authenticate("jwt", { session: false }),
-  checkSchema(boardConfigurationSchema),
+  checkSchema(boardConfigurationDto),
   handleValidationErrors,
-  addBoardConfiguration
+  boardConfigurationService.addBoardConfiguration
 );
 
-export { boardConfigurationRouter };
+export { boardConfigurationController };

@@ -1,4 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export interface IRefreshToken extends Document {
+  token: string;
+  expireAt: Date;
+}
 
 const refreshTokenSchema = new Schema({
   token: {

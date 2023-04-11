@@ -1,9 +1,10 @@
-import mongoose from "mongoose";
-import { Board } from "../models/Board.js";
-import { BoardConfiguration } from "../models/BoardConfiguration.js";
+import { Board } from "../models/Board.model.js";
+import { BoardConfiguration } from "../models/BoardConfiguration.model.js";
 import fs from "fs";
+import { NextFunction, Request, Response } from "express";
+import { IUser } from "../models/User.model.js";
 
-export const createBoard = (req, res) => {
+const createBoard = (req: Request, res: Response) => {
   const { name, boardConfigurationId } = req.body;
   BoardConfiguration.findById(boardConfigurationId)
     .then((boardConfiguration) => {
@@ -19,27 +20,29 @@ export const createBoard = (req, res) => {
           .status(400)
           .json({ message: "Nieprawidłowa konfiguracja planszy" });
       }
-      console.log(req.user);
-      Board({
-        users: [req.user._id],
+      const user = req.user as IUser;
+      Board.create({
+        users: [user._id],
         name,
         activities,
-      }).save((err) => {
-        if (err) {
+      })
+        .then(() => {
+          return res.status(201).json({ message: "Dodano nową planszę" });
+        })
+        .catch((err) => {
           return res.status(500).json({ message: "Database error" });
-        }
-        return res.status(201).json({ message: "Dodano nową planszę" });
-      });
+        });
     })
     .catch((err) => {
       return res.status(500).json({ message: "Database error" });
     });
 };
 
-export const getBoard = (req, res) => {
+const getBoard = (req: Request, res: Response) => {
   const { boardId } = req.params;
+  const user = req.user as IUser;
   Board.findOne(
-    { users: req.user._id, _id: boardId },
+    { users: user._id, _id: boardId },
     { __v: false, "activities.photo": false }
   )
     .populate("users", { __v: false, password: false })
@@ -65,8 +68,9 @@ export const getBoard = (req, res) => {
     });
 };
 
-export const getBoards = (req, res) => {
-  Board.find({ users: req.user._id }, { __v: false, "activities.photo": false })
+const getBoards = (req: Request, res: Response) => {
+  const user = req.user as IUser;
+  Board.find({ users: user._id }, { __v: false, "activities.photo": false })
     .populate("users", { __v: false, password: false })
     .exec()
     .then((boards) => {
@@ -79,9 +83,10 @@ export const getBoards = (req, res) => {
     });
 };
 
-export const deleteBoard = (req, res) => {
+const deleteBoard = (req: Request, res: Response) => {
   const { boardId } = req.params;
-  Board.findOneAndDelete({ _id: boardId, users: req.user._id })
+  const user = req.user as IUser;
+  Board.findOneAndDelete({ _id: boardId, users: user._id })
     .then((board) => {
       if (!board) {
         return res
@@ -95,10 +100,11 @@ export const deleteBoard = (req, res) => {
     });
 };
 
-export const markActivityAsCompleted = (req, res) => {
+const markActivityAsCompleted = (req: Request, res: Response) => {
   const { boardId, activityId } = req.params;
   const { name } = req.body;
-  Board.findOne({ _id: boardId, users: req.user._id })
+  const user = req.user as IUser;
+  Board.findOne({ _id: boardId, users: user._id })
     .then((board) => {
       if (!board) {
         return res
@@ -112,7 +118,7 @@ export const markActivityAsCompleted = (req, res) => {
       );
       if (activity) {
         activity.isCompleted = true;
-        activity.completionDate = new Date().toISOString();
+        activity.completionDate = new Date();
         if (activity.icon === "OWN_ACTIVITY" && name) {
           activity.name = name;
         }
@@ -133,9 +139,14 @@ export const markActivityAsCompleted = (req, res) => {
     });
 };
 
-export const validateActivity = (req, res, next) => {
+const validateActivity = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { boardId, activityId } = req.params;
-  Board.findOne({ _id: boardId, users: req.user._id })
+  const user = req.user as IUser;
+  Board.findOne({ _id: boardId, users: user._id })
     .then((board) => {
       if (!board) {
         return res
@@ -145,47 +156,54 @@ export const validateActivity = (req, res, next) => {
       const activity = board.activities.find((activity) =>
         activity._id.equals(activityId)
       );
-      if (activity) {
-        req.board = board;
-        next();
-      } else {
+      if (!activity) {
         return res
           .status(400)
           .json({ message: "Nieprawidłowy identyfikator aktywności" });
       }
+      next();
     })
     .catch((err) => {
       return res.status(500).json({ message: "Database error" });
     });
 };
 
-export const handleUploadedActivityPhoto = (req, res) => {
-  const { activityId } = req.params;
-  if (!req.board) {
-    return res.status(500).json({ message: "Board not found" });
-  }
-  if (req.file) {
-    const activity = req.board.activities.find((activity) =>
-      activity._id.equals(activityId)
-    );
-    if(activity.photo && fs.existsSync(`./uploads/${activity.photo}`)) {
-      fs.unlinkSync(`./uploads/${activity.photo}`);
+const handleUploadedActivityPhoto = (req: Request, res: Response) => {
+  const { boardId, activityId } = req.params;
+  const user = req.user as IUser;
+  Board.findOne({ _id: boardId, users: user._id }).then((board) => {
+    if (!board) {
+      return res.status(500).json({ message: "Board not found" });
     }
-    activity.photo = req.file.filename;
-    req.board.save((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Database error" });
+    if (req.file) {
+      const activity = board.activities.find((activity) =>
+        activity._id.equals(activityId)
+      );
+      if (!activity) {
+        return res
+          .status(400)
+          .json({ message: "Nieprawidłowy identyfikator aktywności" });
       }
-      return res.sendStatus(200);
-    });
-  } else {
-    return res.status(400).json({ message: "Missing file" });
-  }
+      if (activity.photo && fs.existsSync(`./uploads/${activity.photo}`)) {
+        fs.unlinkSync(`./uploads/${activity.photo}`);
+      }
+      activity.photo = req.file.filename;
+      board.save((err) => {
+        if (err) {
+          return res.status(500).json({ message: "Database error" });
+        }
+        return res.sendStatus(200);
+      });
+    } else {
+      return res.status(400).json({ message: "Missing file" });
+    }
+  });
 };
 
-export const getActivityPhoto = (req, res) => {
+const getActivityPhoto = (req: Request, res: Response) => {
   const { boardId, activityId } = req.params;
-  Board.findOne({ _id: boardId, users: req.user._id })
+  const user = req.user as IUser;
+  Board.findOne({ _id: boardId, users: user._id })
     .then((board) => {
       if (!board) {
         return res
@@ -210,4 +228,15 @@ export const getActivityPhoto = (req, res) => {
     .catch((err) => {
       return res.status(500).json({ message: "Database error" });
     });
+};
+
+export default {
+  createBoard,
+  getBoard,
+  getBoards,
+  deleteBoard,
+  markActivityAsCompleted,
+  validateActivity,
+  handleUploadedActivityPhoto,
+  getActivityPhoto,
 };

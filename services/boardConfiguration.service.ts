@@ -1,7 +1,8 @@
 import { matchedData } from "express-validator";
-import { BoardConfiguration } from "../models/BoardConfiguration.js";
+import { BoardConfiguration } from "../models/BoardConfiguration.model.js";
+import { Request, Response } from "express";
 
-export const getBoardConfiguration = (req, res) => {
+const getBoardConfiguration = (req: Request, res: Response) => {
   const { boardConfigurationId } = req.params;
   BoardConfiguration.findById(boardConfigurationId)
     .then((boardConfiguration) => {
@@ -15,14 +16,19 @@ export const getBoardConfiguration = (req, res) => {
     });
 };
 
-export const addBoardConfiguration = (req, res) => {
-  BoardConfiguration(
+const addBoardConfiguration = (req: Request, res: Response) => {
+  BoardConfiguration.create(
     matchedData(req, { locations: ["body"], includeOptionals: true })
-  ).save((err, boardConfiguration) => {
-    if (err) {
-      console.log(err);
+  )
+    .then((boardConfiguration) => {
+      return res.status(201).json(boardConfiguration._id);
+    })
+    .catch((err) => {
       return res.status(500).json({ message: "Database error" });
-    }
-    return res.status(201).json(boardConfiguration._id);
-  });
+    });
+};
+
+export default {
+  getBoardConfiguration,
+  addBoardConfiguration,
 };

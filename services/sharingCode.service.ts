@@ -1,26 +1,26 @@
-import { Board } from "../models/Board.js";
-import { SharingCode } from "../models/SharingCode.js";
-import { User } from "../models/User.js";
+import { Request, Response } from "express";
+import { Board } from "../models/Board.model.js";
+import { SharingCode } from "../models/SharingCode.model.js";
+import { IUser, User } from "../models/User.model.js";
 
-const generateSharingCode = (req, res) => {
+const generateSharingCode = (req: Request, res: Response) => {
   const { boardId } = req.params;
-  SharingCode({
+  SharingCode.create({
     board: boardId,
-  }).save((err, sharingCode) => {
-    if (err) {
-      return res.status(500).json({ message: "Database error" });
-    }
+  }).then((sharingCode) => {
     return res.status(201).json(sharingCode);
+  }).catch((err) => {
+    return res.status(500).json({ message: "Database error" });
   });
 };
 
-export const getSharingCodeForBoard = async (req, res) => {
+const getSharingCodeForBoard = async (req: Request, res: Response) => {
   const { boardId } = req.params;
   SharingCode.findOne({ board: boardId })
     .populate(
       "board",
       { __v: false, name: false, activities: false },
-      { users: req.user._id }
+      // { users: req.user._id }
     )
     .then((sharingCode) => {
       if (!sharingCode) {
@@ -44,7 +44,7 @@ export const getSharingCodeForBoard = async (req, res) => {
     });
 };
 
-export const useSharingCodeForBoard = async (req, res) => {
+const useSharingCodeForBoard = async (req: Request, res: Response) => {
   const { code: sharingCode } = req.params;
   SharingCode.findById(sharingCode)
     .then((sharingCode) => {
@@ -54,9 +54,10 @@ export const useSharingCodeForBoard = async (req, res) => {
       if (new Date(sharingCode.expiresAt) < new Date()) {
         return res.status(404).json({ message: "Kod wygasł" });
       }
+      const user = req.user as IUser;
       Board.findOneAndUpdate(
         { _id: sharingCode.board._id },
-        { $push: { users: req.user._id } },
+        { $push: { users: user._id } },
         { new: true }
       )
         .then((board) => {
@@ -69,4 +70,9 @@ export const useSharingCodeForBoard = async (req, res) => {
     .catch((err) => {
       return res.status(500).json({ message: "Database error" });
     });
+};
+
+export default {
+  getSharingCodeForBoard,
+  useSharingCodeForBoard,
 };

@@ -2,25 +2,13 @@ import { Router } from "express";
 import { body } from "express-validator";
 import { param } from "express-validator";
 import passport from "passport";
-import {
-  createBoard,
-  deleteBoard,
-  getActivityPhoto,
-  getBoard,
-  getBoards,
-  handleUploadedActivityPhoto,
-  markActivityAsCompleted,
-  validateActivity,
-} from "../controllers/boardController.js";
-import { handleValidationErrors } from "../middlewares/handleValidationErrors.js";
+import { handleValidationErrors } from "../middlewares/handleValidationErrors.middleware.js";
 import multer from "multer";
-import {
-  getSharingCodeForBoard,
-  useSharingCodeForBoard,
-} from "../controllers/sharingCodeController.js";
+import boardService from "../services/board.service.js";
+import sharingCodeService from "../services/sharingCode.service.js";
 
 const upload = multer({ dest: process.env.UPLOAD_DESTINATION || "uploads/" });
-const boardRouter = Router();
+const boardController = Router();
 
 /**
  * @swagger
@@ -74,10 +62,10 @@ const boardRouter = Router();
  *                            photo:
  *                              type: string
  */
-boardRouter.get(
+boardController.get(
   "/",
   passport.authenticate("jwt", { session: false }),
-  getBoards
+  boardService.getBoards
 );
 
 /**
@@ -151,12 +139,12 @@ boardRouter.get(
  *                          icon:
  *                            type: string
  */
-boardRouter.get(
+boardController.get(
   "/:boardId",
   passport.authenticate("jwt", { session: false }),
   param("boardId").isMongoId(),
   handleValidationErrors,
-  getBoard
+  boardService.getBoard
 );
 
 /**
@@ -180,13 +168,13 @@ boardRouter.get(
  *      201:
  *        description: Created
  */
-boardRouter.post(
+boardController.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   body("name").isString().isLength({ min: 1, max: 32 }),
   body("boardConfigurationId").isMongoId(),
   handleValidationErrors,
-  createBoard
+  boardService.createBoard
 );
 
 /**
@@ -214,11 +202,11 @@ boardRouter.post(
  *                  type: string
  *                  format: date-time
  */
-boardRouter.get(
+boardController.get(
   "/:boardId/get-sharing-code",
   passport.authenticate("jwt", { session: false }),
   param("boardId").isMongoId(),
-  getSharingCodeForBoard
+  sharingCodeService.getSharingCodeForBoard
 );
 
 /**
@@ -251,13 +239,13 @@ boardRouter.get(
  *      200:
  *       description: OK
  */
-boardRouter.post(
+boardController.post(
   "/:boardId/activity/:activityId/complete",
   passport.authenticate("jwt", { session: false }),
   param("boardId").isMongoId(),
   param("activityId").isString(),
   handleValidationErrors,
-  markActivityAsCompleted
+  boardService.markActivityAsCompleted
 );
 
 /**
@@ -286,13 +274,13 @@ boardRouter.post(
  *              type: string
  *              format: binary
  */
-boardRouter.get(
+boardController.get(
   "/:boardId/activity/:activityId/photo",
   passport.authenticate("jwt", { session: false }),
   param("boardId").isMongoId(),
   param("activityId").isString(),
   handleValidationErrors,
-  getActivityPhoto
+  boardService.getActivityPhoto
 );
 
 /**
@@ -326,15 +314,15 @@ boardRouter.get(
  *      200:
  *       description: OK
  */
-boardRouter.post(
+boardController.post(
   "/:boardId/activity/:activityId/photo",
   passport.authenticate("jwt", { session: false }),
   param("boardId").isMongoId(),
   param("activityId").isString(),
   handleValidationErrors,
-  validateActivity,
+  boardService.validateActivity,
   upload.single("file"),
-  handleUploadedActivityPhoto
+  boardService.handleUploadedActivityPhoto
 );
 
 /**
@@ -353,12 +341,12 @@ boardRouter.post(
  *      200:
  *       description: OK
  */
-boardRouter.delete(
+boardController.delete(
   "/:boardId",
   passport.authenticate("jwt", { session: false }),
   param("boardId").isMongoId(),
   handleValidationErrors,
-  deleteBoard
+  boardService.deleteBoard
 );
 
-export { boardRouter };
+export { boardController };

@@ -5,23 +5,18 @@ import express from "express";
 const app = express();
 import cors from "cors";
 import mongoose from "mongoose";
-import passport from "passport";
 import { configurePassport } from "./config/passport.js";
-configurePassport(passport);
 import swaggerUI from "swagger-ui-express";
 import { swaggerDocs } from "./config/swagger.js";
-import { authRouter } from "./routes/authRoutes.js";
-import { boardRouter } from "./routes/boardRoutes.js";
-import { boardConfigurationRouter } from "./routes/boardConfigurationRoutes.js";
-import { sharingCodeRouter } from "./routes/sharingCodeRoutes.js";
+import { authController } from "./controllers/auth.controller.js";
+import { boardController } from "./controllers/board.controller.js";
+import { boardConfigurationController } from "./controllers/boardConfiguration.controller.js";
+import { sharingCodeController } from "./controllers/sharingCode.controller.js";
 
-const mongooseOptions = {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-};
+configurePassport();
 
 mongoose
-  .connect(process.env.MONGODB_URI, mongooseOptions)
+  .connect(process.env.MONGODB_URI || "")
   .then(() => {
     console.log(`[${new Date().toLocaleString()}] Connected to database`);
   })
@@ -40,13 +35,13 @@ app.use(
 );
 
 const v1Router = express.Router();
-v1Router.use('/auth', authRouter);
-v1Router.use('/boards', boardRouter);
-v1Router.use('/board-configurations', boardConfigurationRouter);
-v1Router.use('/sharing-codes', sharingCodeRouter)
+v1Router.use("/auth", authController);
+v1Router.use("/boards", boardController);
+v1Router.use("/board-configurations", boardConfigurationController);
+v1Router.use("/sharing-codes", sharingCodeController);
 v1Router.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
-app.use('/v1', v1Router);
+app.use("/v1", v1Router);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,4 +1,6 @@
-export const loginSchema = {
+import { Schema } from "express-validator";
+
+export const loginDto: Schema = {
   email: {
     in: ['body'],
     isEmpty: {
