@@ -24,4 +24,5 @@ jobs:
           cd /var/www/shared-moments-nodejs
           git pull origin master
           pnpm i
+          pnpm build
           pm2 restart "Shared moments"
